@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Campgaw Mountain: Customer Service Training</title>
+<style>
+:root{--bg:#eef4f8;--card:#fff;--ink:#14262f;--mute:#54707e;--line:#cfdde5;--acc:#0b5f8a;--accink:#fff;--ok:#1b7a4b;--okbg:#e3f4ea;--bad:#a8321f;--badbg:#fbe9e5;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1b22;--card:#17262f;--ink:#e6f0f5;--mute:#93aebb;--line:#2b4250;--acc:#6cc0ec;--accink:#08202d;--ok:#6fd49c;--okbg:#14352550;--bad:#ff9d8a;--badbg:#3d1d17}}
+:root[data-theme="dark"]{--bg:#0f1b22;--card:#17262f;--ink:#e6f0f5;--mute:#93aebb;--line:#2b4250;--acc:#6cc0ec;--accink:#08202d;--ok:#6fd49c;--okbg:#14352550;--bad:#ff9d8a;--badbg:#3d1d17}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 Georgia,"Iowan Old Style",serif}
+h1,h2,button,input,label{font-family:"Trebuchet MS","Segoe UI",Arial,sans-serif}
+main{max-width:760px;margin:0 auto;padding:20px 16px 80px}
+h1{font-size:2rem;line-height:1.15;margin:12px 0 10px}
+.lead{color:var(--mute);margin:0}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:10px 0;z-index:5}
+.track{height:8px;background:var(--line);border-radius:8px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--acc);transition:width .3s}
+.cnt{font:14px "Trebuchet MS",Arial,sans-serif;color:var(--mute);margin-top:4px}
+nav{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+nav button{font-size:14px;padding:7px 11px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);cursor:pointer}
+nav button.on{background:var(--acc);color:var(--accink);border-color:var(--acc)}
+nav button.fin::after{content:" \2713"}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px;margin:14px 0}
+h2{font-size:1.35rem;margin:0 0 8px}
+h3{font:bold 1.05rem "Trebuchet MS",Arial,sans-serif;margin:16px 0 4px}
+p{margin:8px 0}ul{margin:6px 0;padding-left:22px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;margin:12px 0;background:var(--bg)}
+.q{margin-top:18px;padding-top:16px;border-top:1px dashed var(--line)}
+.q p{margin:0 0 8px;font-weight:bold}
+.opt{display:block;width:100%;text-align:left;font-size:16px;padding:10px 12px;margin:6px 0;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--acc)}
+.opt:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.opt.bad{background:var(--badbg);border-color:var(--bad);color:var(--bad)}
+.opt.good{background:var(--okbg);border-color:var(--ok);color:var(--ok);font-weight:bold}
+.fb{font:14px "Trebuchet MS",Arial,sans-serif;margin-top:6px;min-height:1.2em}
+.name{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+input[type=text]{flex:1;min-width:200px;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.btn{font-size:16px;padding:10px 18px;border:0;border-radius:8px;background:var(--acc);color:var(--accink);cursor:pointer;font-weight:bold}
+textarea{width:100%;min-height:300px;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);margin:10px 0}
+.hide{display:none}
+.lock{color:var(--mute);font:15px "Trebuchet MS",Arial,sans-serif}
+.row{display:flex;justify-content:space-between;margin-top:18px;gap:10px}
+</style>
+</head>
+<body>
+<main>
+<h1>Campgaw Mountain Customer Service Training</h1>
+<p class="lead">Work through each module: read it, answer its questions, then move on. When every module is done, copy your completion summary.</p>
+<div class="name"><label for="nm">Your name</label><input type="text" id="nm" placeholder="First and last name" autocomplete="name"></div>
+<div class="bar"><div class="track"><div class="fill" id="fill"></div></div><div class="cnt" id="cnt"></div></div>
+<nav id="nav" aria-label="Modules"></nav>
+<div id="mods"></div>
+<section id="done">
+<h2>Completion summary</h2>
+<p class="lock" id="lock">Enter your name and answer every question correctly in every module to unlock your summary.</p>
+<div id="out" class="hide">
+<p>Copy this and paste it where your supervisor asked for it.</p>
+<textarea id="sum" readonly aria-label="Completion summary"></textarea>
+<button class="btn" id="copy">Copy summary</button>
+<span class="fb" id="cfb" role="status"></span>
+</div>
+</section>
+</main>
+<script>
+// q: [question, [options], correctIndex]
+var MOD=[
+{id:"1",t:"Module 1: Tubing",html:
+"<h3>Reserve online in advance</h3><p>Snow tubing is a strictly capacity-controlled event. Sessions often sell out, especially on weekends and holidays, so booking online ahead is the only way to guarantee a spot.</p><div class='note'>Staff note: When a session is sold out, always have the next available session times ready to offer. Guests are much happier with an alternative than a “no.”</div>"+
+"<h3>48-inch height requirement</h3><p>This is a fundamental safety standard. Riders need a certain physical reach and center of gravity to stay secure at high speed. At 48 inches, guests can sit deeply enough in the tube to stay stable while gripping the safety handles on either side.</p><p>We refund a child found to be under the requirement, plus one parent to stay back and supervise. Handle this with empathy and confirm the child’s height at the ticket window using our official measuring polar bear.</p>"+
+"<h3>Single-rider policy</h3><p>Parents may ask to hold a child to get around the height requirement. This is a non-negotiable safety measure. A child who doesn’t meet the height requirement to ride solo cannot tube, even with an adult.</p>"+
+"<h3>Arrival and check-in</h3><p>Tell guests to arrive 30 to 45 minutes before their session to allow for parking and check-in. They go to a ticket window to pick up tickets and sign waivers. All guests must sign physical waivers on arrival, despite any online waiver. Printable waivers are available online.</p>"+
+"<h3>Tubing waivers</h3><p>A signed physical waiver is mandatory for every tuber. No tubing ticket is issued until a valid waiver is in your hands. Order of operations:</p><ul><li>Distribute first: hand over the waiver(s) as soon as the guest says they have a tubing reservation.</li><li>Verify order details: check how many tickets are in the reservation so you know how many waivers to expect, and make sure anyone signing is over 18.</li><li>Collect and print: collect the signed waiver, verify it is complete, and only then print and hand over the tickets.</li></ul><p>We do not accept online waivers. Guests may print the waiver at home, but you must still verify it is filled out completely.</p><div class='note'>If a parent is not present to sign for a minor, that minor cannot participate. If a guest refuses to sign, they cannot participate. There are no workarounds.</div>",
+qs:[
+["Why do we strongly encourage guests to reserve online in advance?",["Tubing is a capacity-controlled event and sessions often sell out","Online tickets are cheaper","The ticket window is closed on weekends","Walk-ups are never allowed"],0],
+["A guest wants a session that is sold out. What should you do?",["Tell them there is nothing available","Offer the next available session times","Tell them to come back tomorrow","Let them in over capacity"],1],
+["What is the minimum height to tube?",["42 inches","44 inches","48 inches","52 inches"],2],
+["Why does the height requirement exist?",["Taller guests pay more","Riders need the reach and center of gravity to stay secure and hold the safety handles","It keeps lines short","The tubes are too small for short guests"],1],
+["A child is found to be under the requirement. What refund do we offer?",["No refund","A refund for the child only","A refund for the child and one parent who stays back to supervise","A refund for the whole family"],2],
+["How do you confirm a child’s height at the ticket window?",["Estimate by eye","Ask the parent","Use the official measuring polar bear","Check their age"],2],
+["A parent asks to hold their under-height child on their lap. What do you say?",["Yes, if the parent signs the waiver","Yes, if the child is close to 48 inches","No. A child who can’t ride solo can’t tube, even with an adult","Ask the lane staff to decide"],2],
+["How early should guests arrive before their session?",["5 to 10 minutes","15 to 20 minutes","30 to 45 minutes","1 hour or more"],2],
+["A guest says they filled out a waiver online. What is required?",["Nothing, online waivers are fine","A physical, paper waiver signed at arrival","A waiver emailed to the ticket window","A verbal agreement"],1],
+["What is the correct order of operations at the window?",["Print tickets, then collect waivers, then verify","Distribute waivers, verify order details, then collect, verify and print tickets","Verify order details, print tickets, then collect waivers","Collect payment, then distribute waivers"],1],
+["Who may sign a tubing waiver?",["Anyone in the group","Anyone over 18","Anyone over 16","Only the person who made the reservation"],1],
+["A minor arrives without a parent who can sign. What happens?",["They tube with a friend’s parent","They tube if the parent texts permission","They cannot participate","A staff member signs for them"],2]]},
+
+{id:"2",t:"Module 2: Tubing Cancellations",html:
+"<p>Our policies balance guest needs with capacity-controlled tubing. Because sessions often sell out, refund rules encourage early communication so we can reopen spots. There are four categories: advance cancellations, short-notice changes, height requirements, and weather closures.</p>"+
+"<h3>48 hours or more before the reservation</h3><p>Full refund for each ticket.</p>"+
+"<h3>Within 48 hours of the reservation</h3><p>A $10 fee is applied per ticket refunded, to account for the limited time to re-sell that session.</p>"+
+"<h3>Child under 48 inches</h3><p>If a child is measured on-site and doesn’t meet the requirement, we provide a full refund for that child and one parent to supervise.</p>"+
+"<h3>Mountain closure</h3><p>First priority is to offer a reschedule. If the guest can’t return, a full refund is provided for all tickets.</p>"+
+"<h3>Key reminders</h3><ul><li>Be empathetic: for “Within 48 Hours” or “Under 48 Inches,” lead with a friendly tone before explaining the policy.</li><li>Take the ticket: always remove the ticket from the guest after processing any refund.</li><li>Rescheduling: during closures, find a future date that works before defaulting to a refund.</li></ul><div class='note'>You can tell a customer whether they are eligible for a refund. To actually process it, pass the information to the supervisor on duty.</div>",
+qs:[
+["A guest cancels a tubing reservation 3 days ahead. What do they get?",["No refund","Full refund for each ticket","Refund minus $10 per ticket","A voucher only"],1],
+["A guest cancels within 48 hours of their tubing reservation. What applies?",["Full refund","No refund","A $10 fee per ticket refunded","A $30 fee per ticket refunded"],2],
+["A child measures under 48 inches on-site. What is refunded?",["Nothing","The child only","The child and one parent to supervise","Everyone in the party"],2],
+["The mountain closes. What is the first thing you offer?",["A refund","A reschedule","A voucher","Nothing"],1],
+["After processing a refund, what do you do with the ticket?",["Give it back to the guest","Remove it from the guest","Leave it at the window","Throw it away"],1],
+["Who actually processes the refund?",["You, the customer service rep","The supervisor on duty","The guest, online","Lane staff"],1]]},
+
+{id:"3",t:"Module 3: Daily Snow Passes",html:
+"<h3>What is a Snow Pass?</h3><p>A Snow Pass (our lift ticket) is required for any guest entering a snow surface. It is date-specific and valid for one-time use. Ticket colors change daily, so guests pick up passes on arrival at any ticket window.</p>"+
+"<p><b>All Day Pass:</b> valid from purchase until the mountain closes. <b>Half-Day Pass:</b> a budget option for a specific time block.</p><div class='note'>Staff note: You must confirm the session end time with the guest during the sale of a half-day pass.</div>"+
+"<h3>Weekdays (non-holiday)</h3><ul><li>Mon to Thu: All Day 2pm-8pm $41. Half Day 2pm-5pm $36. Half Day 4pm-8pm $36.</li><li>Friday: All Day 1pm-10pm $46. Half Day 1pm-6pm $38. Half Day 5pm-10pm $38.</li></ul>"+
+"<h3>Weekends and holidays</h3><ul><li>Saturday: All Day 8:30am-10pm $65. Half Day 8:30am-4pm $55. Half Day 3pm-10pm $55.</li><li>Sunday: All Day 8:30am-8pm $65. Half Day 8:30am-4pm $55. Half Day 3pm-8pm $55.</li></ul>"+
+"<h3>Discounts</h3><p>You must view a valid physical ID, no exceptions. Seniors (65+): 20% off snow passes and rentals. Military and first responders (active duty or veteran ID): 20% off snow passes and rentals. Discounts do not apply to lessons or tubing.</p>"+
+"<h3>Liability waivers</h3><p>The liability waiver is the most critical document we handle. Every guest receiving a ticket needs one. Workflow:</p><ul><li>Identify the guests: how many people, and are there minors?</li><li>Distribute: hand the correct waiver before processing payment.</li><li>Verify and collect: take back the signed waiver and check for a signature, then collect payment.</li><li>Issue pass: only after the waiver is collected and the ticket is paid.</li></ul><div class='note'>Staff note: Stack completed waivers neatly at your station for a supervisor to collect at end of shift. Liability waivers go in a separate pile from tubing waivers.</div>"+
+"<h3>Critical policy: guests under 18</h3><p>Minors cannot self-authorize. A parent or legal guardian must come to the window to sign the liability waiver, sign the rental form, and pick up the pass and rental equipment. No phone calls or notes. After paperwork is signed, supervision is up to the guardian, but a guardian may leave a minor unattended only if reasonably safe. A competent 16-year-old can ski with friends. A 2-year-old (or any young child) can never be left unattended.</p>",
+qs:[
+["What is a Snow Pass?",["A season-long membership","Our lift ticket, required for any guest entering a snow surface","A tubing ticket","A rental receipt"],1],
+["What must you confirm when selling a Half-Day Pass?",["The guest’s home address","The session end time","The guest’s ski level","The helmet size"],1],
+["How much is a Friday (non-holiday) All Day Pass?",["$41","$46","$55","$65"],1],
+["How much is a Saturday Half-Day Pass?",["$36","$38","$55","$65"],2],
+["What discount do seniors 65+ and military/first responders get, and where does it apply?",["20% on snow passes and rentals, not lessons or tubing","20% on everything including lessons and tubing","10% on snow passes only","15% on food and retail"],0],
+["What ID is required for a discount?",["A valid physical ID, no exceptions","A photo of an ID on a phone","Verbal confirmation","None for seniors"],0],
+["What is the correct snow pass waiver workflow?",["Take payment, issue pass, then get the waiver","Identify guests, distribute waiver, verify and collect it, collect payment, then issue pass","Issue pass, then collect waiver at the lift","Verify waiver, issue pass, then collect payment"],1],
+["Where do completed liability waivers go at your station?",["Mixed in with tubing waivers","In a separate pile from tubing waivers","In the trash after the shift","Home with you"],1],
+["A 15-year-old arrives alone with a note from a parent. What happens?",["They get a pass","They get a pass if the note is signed","The parent must be at the window to sign and pick up the pass","They may ski if they call the parent"],2],
+["Which child may a guardian never leave unattended at the mountain?",["A competent 16-year-old","A 2-year-old or any young child","Any child over 10","None, guardians decide"],1]]},
+
+{id:"4",t:"Module 4: Daily Rentals",html:
+"<p>Your job is to process payment and issue the correct paperwork. You don’t need to fit boots, but you must know which form to hand out and which policies to voice. <b>Do not send a guest to the rental shop without a stamped form.</b></p>"+
+"<h3>Packages</h3><ul><li>Skis/Boots/Poles: $52</li><li>Snowboard/Boots: $52</li><li>Helmet rental: $16 (standalone add-on)</li></ul><p>Helmets are recommended for everyone, and New Jersey law requires all children under 18 to wear a helmet while skiing or snowboarding.</p><div class='note'>Staff note: Always offer a helmet to parents. If purchased, mark it on the rental form.</div>"+
+"<h3>Individual equipment (on-site purchase only)</h3><ul><li>Skis only or snowboard only: $42. Guest must have their own boots.</li><li>Ski boots only or snowboard boots only: $32. Guest must have their own skis/board.</li><li>Poles only: $10. Guest must have their own skis/boots.</li></ul>"+
+"<h3>Rental forms</h3><p>Every guest purchasing equipment completes a physical form so the shop can calibrate gear to height, weight, age and skill level. Four steps before handing it to a guest:</p><ul><li>ID info: write the driver’s license number and state clearly in the top right.</li><li>Write the product purchased in the top right: “SKI PKG” or “SB PKG” for packages; “SKIS ONLY,” “SB ONLY,” “SKI BOOTS ONLY,” or “SB BOOTS ONLY” for individual items; “Helmet” for helmets. Include the quantity of each.</li><li>The “3” rule: put up to 3 people on one form. A family of 5 uses two forms (3+2).</li><li>PAID stamp: every form must be stamped “PAID” at your station. It is the only way the rental shop knows the guest has paid and signed waivers.</li></ul><div class='note'>Staff note: Guests fill in the top white box with the person responsible for the equipment, and a grey box for each person using equipment.</div>",
+qs:[
+["How much is the Ski or Snowboard rental package?",["$32","$42","$52","$62"],2],
+["How much is a helmet rental?",["$10","$16","$32","$42"],1],
+["Which guests are legally required to wear a helmet to ski or snowboard in New Jersey?",["Everyone","Anyone under 18","Anyone under 12","Beginners only"],1],
+["How much is skis-only (or snowboard-only), and what must the guest have?",["$42, their own boots","$32, their own boots","$52, their own poles","$10, their own boots"],0],
+["How much are boots only?",["$10","$16","$32","$42"],2],
+["How many people can go on a single rental form?",["1","2","3","5"],2],
+["A family of 5 is renting. How many forms do you use?",["Five","Three","Two (3+2)","One"],2],
+["What must every rental form have before the guest goes to the rental shop?",["A supervisor’s signature","A PAID stamp","A photo of the guest","A helmet receipt"],1],
+["What do you write on the form for a guest renting only ski boots?",["SKI PKG","SKIS ONLY","SKI BOOTS ONLY","Boots"],2]]},
+
+{id:"5",t:"Module 5: Daily Snow Pass and Rental Cancellations",html:
+"<p>Snow passes and rentals don’t need a dedicated staff member and aren’t capacity limited, so we offer maximum flexibility.</p>"+
+"<h3>Eligible for a 100% refund to the original form of payment if</h3><ul><li>The request is pre-session: the guest contacts us or arrives at the window before the session start time.</li><li>The gear is unused: not scanned out or used on the snow.</li><li>The pass is unused: not used at the lift.</li></ul>"+
+"<h3>Once the session begins</h3><ul><li>No-shows: if a guest doesn’t show and doesn’t contact us before the start time, the payment is forfeited.</li><li>Partial use: no pro-rated refunds if a guest leaves early after the session has begun.</li></ul><div class='note'>You can tell the customer if they are eligible for a refund. To process it, pass the information to the supervisor on duty.</div>",
+qs:[
+["When is a guest eligible for a full snow pass or rental refund?",["Any time that day","Before the session start time, with the pass and gear unused","Within 48 hours of the session","Only if it snowed"],1],
+["A guest doesn’t show up and never contacts us before the start time. What happens to their payment?",["Full refund","It is forfeited","Refund minus a fee","It becomes a voucher"],1],
+["A guest leaves 2 hours into their session and asks for a partial refund. What do you say?",["Pro-rated refund","No pro-rated refunds after the session begins","Half refund","Refund as a voucher"],1],
+["Who processes a refund?",["The customer service rep","The supervisor on duty","Rental shop staff","The guest, online"],1]]},
+
+{id:"7",t:"Module 7: Lesson Cancellations",html:
+"<p>Lessons involve scheduled staff and limited terrain capacity, so these policies are stricter than for snow passes.</p>"+
+"<h3>48 hours or more before the lesson</h3><p>Full refund for each ticket.</p>"+
+"<h3>Within 48 hours of the lesson</h3><p>A $30 fee is applied per ticket refunded.</p>"+
+"<h3>No-show</h3><p>Once the lesson reaches its start time it is a no-show. No refunds or rescheduling.</p>"+
+"<h3>Late arrivals</h3><p>If a guest is late and lessons are sold out, the instructor is not required to extend the lesson. It ends at the originally scheduled time to avoid impacting the next guest.</p><div class='note'>You can tell the customer if they are eligible for a refund. To process it, pass the information to the supervisor on duty.</div>",
+qs:[
+["A guest cancels a lesson 3 days ahead. What do they get?",["Full refund for each ticket","Refund minus $30","No refund","A voucher"],0],
+["What fee applies to a lesson cancelled within 48 hours?",["$10 per ticket","$20 per ticket","$30 per ticket","$40 per ticket"],2],
+["A guest arrives after their lesson start time and wants a refund or reschedule. What applies?",["Refund","It is a no-show: no refund or rescheduling","Reschedule free","Refund minus $30"],1],
+["A guest arrives late and lessons are sold out. What happens?",["The lesson is extended","The lesson ends at the originally scheduled time","The lesson is cancelled","They get a free reschedule"],1]]},
+
+{id:"9",t:"Module 9: Season Passes and Perks",html:
+"<p>Season passes let guests skip ticket lines and daily waivers. Help guests find the right pass, handle photos and waivers correctly, and remember that every interaction is a chance to share the value of membership.</p>"+
+"<h3>Key selling points</h3><ul><li>Timesaver: skip ticket lines and daily waivers every visit.</li><li>Best value: pays for itself in just 5 visits.</li><li>Perks: automatic 15% off food and retail, plus local business savings.</li><li>Bonus tubing: unlimited tubing on Mondays and Tuesdays (non-holiday) and $15 guest tickets for friends.</li><li>Buy now, ski now: any snow pass can be upgraded to a season pass on the day of use.</li></ul>"+
+"<h3>Types of season passes</h3><ul><li><b>Unlimited:</b> zero blackout dates, valid every day and night the mountain is open. Children’s Unlimited (ages 3-11) and Senior Unlimited (65+) are discounted.</li><li><b>Weekday:</b> valid Monday to Friday (non-holiday). Not valid during Christmas Week, MLK Day or Presidents Week.</li><li><b>Weekend/Holiday:</b> valid Saturdays, Sundays and holiday periods (Christmas Week, MLK Day, Presidents Week).</li></ul>"+
+"<h3>Perks for all passes</h3><ul><li>Food and retail: 15% off for the entire season. The guest must show their pass at purchase.</li><li>Free tubing on Mondays and/or Tuesdays (non-holiday). Guests can bring others tubing at $15 per person.</li><li>Local savings partner: show the pass at participating local restaurants and shops.</li></ul>",
+qs:[
+["How many visits does it take for a season pass to pay for itself?",["3","5","8","10"],1],
+["What discount do season pass holders get on food and retail?",["10%","15%","20%","25%"],1],
+["When do season pass holders tube free?",["Weekends","Mondays and/or Tuesdays, non-holiday","Fridays","Any day"],1],
+["What do pass holders pay to bring a guest tubing?",["Free","$10 per person","$15 per person","Full price"],2],
+["A guest bought a daily snow pass this morning and wants a season pass. What can you do?",["Nothing","Upgrade it to a season pass on the day of use","Refund it, then re-buy","Only upgrade next day"],1],
+["Which pass has zero blackout dates?",["Weekday","Weekend/Holiday","Unlimited","None"],2],
+["Which holiday periods is the Weekday Season Pass NOT valid for?",["Christmas Week, MLK Day, Presidents Week","Thanksgiving only","Only Presidents Week","Every Monday"],0],
+["Which ages get the discounted Children’s and Senior Unlimited passes?",["Children 3-11, seniors 65+","Children 5-12, seniors 60+","Children under 18, seniors 70+","Children 3-14, seniors 62+"],0]]},
+
+{id:"10",t:"Module 10: Season Rentals",html:
+"<p>Season Rentals are an all-in-one solution assigned to a specific guest for the whole winter season.</p>"+
+"<h3>Key selling points</h3><ul><li>Cost efficiency: for guests who visit more than four times a season, it often pays for itself versus daily rates.</li><li>Convenience: skip the rental line. With On-Site Storage, gear is pre-fitted and waiting.</li><li>Consistency: the same boots and gear all season help beginners and intermediates progress faster.</li><li>Flexibility: with On-Site Plus, guests can take gear on their next ski trip for up to 7 days.</li><li>Easy storage: keep gear at the mountain.</li></ul>"+
+"<h3>On-Site Storage</h3><p>Equipment stays at the mountain, pre-set for the guest’s arrival. Guests should call 24 hours in advance to make sure their gear is ready.</p>"+
+"<h3>On-Site Plus</h3><p>Allows guests to take equipment off-site for up to 7 days. A $5 daily charge applies for each day over that limit.</p>",
+qs:[
+["A season rental often pays for itself for guests who visit more than how many times?",["Two","Four","Eight","Ten"],1],
+["How far in advance should On-Site Storage guests call to have gear ready?",["Same day","24 hours","48 hours","1 week"],1],
+["How long can On-Site Plus guests take gear off-site?",["Up to 3 days","Up to 7 days","Up to 14 days","The whole season"],1],
+["What is the charge for each day past the On-Site Plus limit?",["$5 per day","$10 per day","$16 per day","No charge"],0]]}
+];
+
+var L="ABCDEFG",st={},first=0,done=0,total=0,cur=0,gi=0;
+MOD.forEach(function(m){m.q0=gi;m.qs.forEach(function(q){q.g=gi++});m.n=m.qs.length;m.ok=0;total+=m.n});
+var nav=document.getElementById("nav"),mods=document.getElementById("mods");
+MOD.forEach(function(m,i){
+var b=document.createElement("button");b.textContent="Module "+m.id;b.id="tab"+i;b.onclick=function(){show(i)};nav.appendChild(b);
+var s=document.createElement("section");s.id="m"+i;
+var h="<h2>"+m.t+"</h2>"+m.html;
+m.qs.forEach(function(q,k){
+h+='<div class="q"><p>Question '+(k+1)+' of '+m.n+'. '+q[0]+'</p>';
+q[1].forEach(function(o,oi){h+='<button class="opt" data-g="'+q.g+'" data-o="'+oi+'">'+L[oi]+'. '+o+'</button>'});
+h+='<div class="fb" id="f'+q.g+'" role="status"></div></div>'});
+h+='<div class="row"><button class="btn" '+(i?'':'disabled ')+'data-nav="'+(i-1)+'">Previous module</button><button class="btn" '+(i<MOD.length-1?'':'disabled ')+'data-nav="'+(i+1)+'">Next module</button></div>';
+s.innerHTML=h;mods.appendChild(s)});
+function show(i){cur=i;MOD.forEach(function(m,k){document.getElementById("m"+k).classList.toggle("hide",k!==i);document.getElementById("tab"+k).classList.toggle("on",k===i)});window.scrollTo(0,0)}
+mods.addEventListener("click",function(e){
+var n=e.target.closest("[data-nav]");if(n&&!n.disabled){show(+n.dataset.nav);return}
+var b=e.target.closest(".opt");if(!b||b.disabled)return;
+var g=+b.dataset.g,o=+b.dataset.o,m,q;
+MOD.forEach(function(x){x.qs.forEach(function(y){if(y.g===g){m=x;q=y}})});
+var s=st[g]||(st[g]={tries:0,ok:false});if(s.ok)return;s.tries++;
+var f=document.getElementById("f"+g);
+if(o===q[2]){s.ok=true;b.classList.add("good");
+b.parentNode.querySelectorAll(".opt").forEach(function(x){x.disabled=true});
+if(s.tries===1)first++;done++;m.ok++;f.textContent="Correct."}
+else{b.classList.add("bad");b.disabled=true;f.textContent="Not quite. Try another answer."}
+upd()});
+var nm=document.getElementById("nm");nm.addEventListener("input",upd);
+function upd(){
+document.getElementById("fill").style.width=(done/total*100)+"%";
+document.getElementById("cnt").textContent=done+" of "+total+" questions correct";
+MOD.forEach(function(m,i){document.getElementById("tab"+i).classList.toggle("fin",m.ok===m.n)});
+var ready=done===total&&nm.value.trim().length>1;
+document.getElementById("out").classList.toggle("hide",!ready);
+document.getElementById("lock").classList.toggle("hide",ready);
+if(ready){
+var ds=new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
+var t="COMPLETED: Campgaw Mountain Customer Service Training\nName: "+nm.value.trim()+"\nDate: "+ds+"\nModules: "+MOD.map(function(m){return m.id}).join(", ")+"\nScore: "+total+"/"+total+" correct ("+first+"/"+total+" on first try)\n";
+MOD.forEach(function(m){t+="\n"+m.t+" ("+m.n+"/"+m.n+")\n";m.qs.forEach(function(q,k){t+=(k+1)+". "+L[q[2]]+" - "+q[1][q[2]]+" [tries: "+st[q.g].tries+"]\n"})});
+document.getElementById("sum").value=t}}
+document.getElementById("copy").addEventListener("click",function(){
+var ta=document.getElementById("sum"),m=document.getElementById("cfb");
+function ok(){m.textContent=" Copied."}
+function fb(){ta.focus();ta.select();try{document.execCommand("copy")?ok():m.textContent=" Select the text and copy it manually."}catch(x){m.textContent=" Select the text and copy it manually."}}
+try{navigator.clipboard.writeText(ta.value).then(ok,fb)}catch(x){fb()}});
+show(0);upd();
+</script>
+</body>
+</html>
